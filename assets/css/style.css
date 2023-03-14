@@ -198,3 +198,64 @@ body {
   font-size: 15px;
   margin-left: 10px;
 }
+
+@media (max-width: 1250px) {
+  .container {
+    max-width: 900px;
+  }
+  .filter-wrapper {
+    max-width: 900px;
+  }
+}
+@media (max-width: 950px) {
+  .container {
+    max-width: 700px;
+  }
+  .filter-wrapper {
+    max-width: 700px;
+  }
+  .job-listing__item {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 50px;
+  }
+  .item-content__left {
+    position: relative;
+    width: 100%;
+    padding-bottom: 20px;
+    border-bottom: 1px solid hsl(180, 14%, 20%);
+  }
+  .item-content__left .item-content__left-logo {
+    position: absolute;
+    top: -60px;
+    width: 50px;
+    height: 50px;
+  }
+  .item-content__right {
+    margin-top: 20px;
+  }
+}
+@media (max-width: 768px) {
+  .container {
+    padding: 0 15px;
+  }
+  .item-content__right {
+    flex-wrap: wrap;
+  }
+  .filter-wrapper {
+    width: 600px;
+  }
+}
+@media (max-width: 620px) {
+  .filter-wrapper {
+    width: 400px;
+  }
+}
+@media (max-width: 425px) {
+  .filter-wrapper {
+    width: 350px;
+  }
+  .bg-image--mobile {
+    background-image: url("/assets/images/bg-header-mobile.svg");
+  }
+}

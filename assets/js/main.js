@@ -1,7 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     const listWrapper = document.querySelector('#job-listing'),
           filterWrapper = document.querySelector('#filter-wrapper'),
-          filterBlock = document.querySelector('#filter-block');
+          filterBlock = document.querySelector('#filter-block'),
+          clearAllItems = document.querySelector('#clear-item');
 
     filterWrapper.style.display = 'none';
 
@@ -65,14 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
     getData();
 
 
-    function checkFilterBlock(filterItem){
-        console.log('filterItem:', filterItem);
-        if (filterItem.length < 1){
-            filterWrapper.style.display = 'none';
-        }
-    }
-
-
     function addToFilter(data, e) {
         const listings = document.querySelectorAll('.job-listing__item');
     
@@ -90,10 +83,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const filterItem = `
             <div class="filter-item">
                 <div class="btn-filter" data-filter="${filterText}">${capitalizedFilterText}</div>
-                <img id="delete-item" src="./assets/images/icon-remove.svg" alt="delete filter">
+                <img class="delete-item" src="./assets/images/icon-remove.svg" alt="delete filter">
             </div>
         `;
         filterBlock.innerHTML += filterItem;
+
     
         // Добавляем класс к выбранным элементам, которые уже находятся в блоке фильтров
         const selectedItems = filterBlock.querySelectorAll('.btn-filter');
@@ -106,6 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Проверяем, соответствует ли элемент выбранному условию фильтра или его категории
             if (role === filterCategory || level === filterText || languages.includes(filterText) || tools.includes(filterText)) {
                 list.style.display = 'flex';
+                list.classList.add('active');
             } else {
                 list.style.display = 'none';
             }
@@ -122,28 +117,77 @@ document.addEventListener('DOMContentLoaded', () => {
         
         
         
-        const deleteItems = document.querySelectorAll('#delete-item');
+        const deleteItems = document.querySelectorAll('.delete-item');
         
         deleteItems.forEach(button => {
-            button.addEventListener('click', () => {
-                deleteFilter(button, filterItem);
+            button.addEventListener('click', (e) => {
+                deleteFilter(e);
             });
         });
+
+        clearAllItems.addEventListener('click', clearAllItemsFilter);
+
     }
 
 
 
-    function deleteFilter(target, filterItem){
-        console.log(filterItem);
-        target.closest('.filter-item').remove();
-
-        if (filterItem.length === 0){
-            checkFilterBlock(filterItem);
+    function deleteFilter(e) {
+        const target = e.target;
+        if (target.classList.contains('delete-item')) {
+            const filterItem = target.closest('.filter-item');
+            filterItem.remove();
+        
+            const selectedFilters = filterBlock.querySelectorAll('.btn-filter');
+            if (selectedFilters.length < 1) {
+            filterWrapper.style.display = 'none';
+            }
+        
+            const listings = document.querySelectorAll('.job-listing__item');
+            listings.forEach(list => {
+            list.style.display = 'flex';
+            list.classList.remove('selected');
+            list.classList.remove('active');
+            const languages = Array.from(list.querySelectorAll('.item-content__right-btn[data-language]')).map(lang => lang.textContent.trim().toLowerCase());
+            const tools = Array.from(list.querySelectorAll('.item-content__right-btn[data-tool]')).map(tool => tool.textContent.trim().toLowerCase());
+        
+                selectedFilters.forEach(filter => {
+                    const filterText = filter.dataset.filter;
+                    const filterCategory = filter.dataset.role;
+                    const level = filterText.toLowerCase();
+                    if (filterCategory === 'role' && list.querySelector(`.item-content__right-btn[data-role="${filterText}"]`)) {
+                        list.classList.add('selected');
+                    }
+                    if (filterCategory === 'level' && list.querySelector(`.item-content__right-btn[data-level="${level}"]`)) {
+                        list.classList.add('selected');
+                    }
+                    if (languages.includes(filterText) || tools.includes(filterText)) {
+                        list.classList.add('selected');
+                    }
+                });
+            });
         }
-    } 
-// TODO: разобраться что делать с этой функией потому что не могу скрыть filterBlock когда удаляю последний элемент
+    }
 
 
 
+    window.onload = function () {
+        const filters = document.getElementById('filter-wrapper');
+        const filterItems = filters.querySelectorAll('.filter-item');
+        if (filterItems.length === 0) {
+            filters.style.display = 'none';
+        }
+    }
+
+
+    function clearAllItemsFilter() {
+        const listings = document.querySelectorAll('.job-listing__item');
+        const filterItems = document.querySelectorAll('.filter-item');
+        listings.forEach(list => {
+            list.classList.remove('selected', 'active');
+            list.style.display = 'flex';
+        });
+        filterItems.forEach(filterItem => filterItem.remove());
+        filterWrapper.style.display = 'none';
+    }
 
 });
